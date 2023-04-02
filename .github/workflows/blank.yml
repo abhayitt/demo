@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+      - stage
+      - prod
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint with ESLint
+        run: npm run lint
+
+      - name: Format with Prettier
+        run: npm run prettier
+
+      - name: Test
+        env:
+          Cl: true
+        run: npm run test
+
+      - name: Build for dev
+        if: github.ref == 'refs/heads/dev'
+        run: npm run build:dev
+
+      - name: Build for stage
+        if: github.ref == 'refs/heads/stage'
+        run: npm run build:stage
+
+      - name: Build for prod
+        if: github.ref == 'refs/heads/prod'
+        run: npm run build:prod
